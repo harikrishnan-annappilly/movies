@@ -2,6 +2,7 @@ from typing import List
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token
 from models import UserModel
+from util.helper import if_exist_400, find_or_404
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', required=True)
@@ -15,42 +16,55 @@ class UsersResource(Resource):
 
     def post(self):
         payload = parser.parse_args()
-        if UserModel.find_one(username=payload.get('username')):
-            return {'message': 'username already taken'}, 400
-        user = UserModel(**payload)
-        user.save()
-        return {'message': 'user created success', **user.json()}, 201
+
+        @if_exist_400(UserModel, username=payload.get('username'))
+        def inner():
+            user = UserModel(**payload)
+            user.save()
+            return {'message': 'user created success', **user.json()}, 201
+
+        return inner()
 
 
 class UserResource(Resource):
     def get(self, user_id):
-        user: UserModel = UserModel.find_one(id=user_id)
-        if user is None:
-            return {'message': 'username not found'}, 404
-        return user.json()
+        @find_or_404(UserModel, id=user_id)
+        def inner(*args):
+            (user,) = args
+            user: UserModel
+            return user.json()
+
+        return inner()
 
     def put(self, user_id):
-        user: UserModel = UserModel.find_one(id=user_id)
         payload = parser.parse_args()
         username = payload.get('username')
         password = payload.get('password')
-        if user is None:
-            return {'message': 'username not found'}, 404
-        if user.username != username:
-            return {'message': 'username already taken'}, 400
 
-        user.username = username
-        user.password = password
-        user.save()
-        return user.json(), 202
+        @find_or_404(UserModel, id=user_id)
+        def inner(*args):
+            (user,) = args
+            user: UserModel
+            if user.username != username:
+                return {'message': 'username already taken'}, 400
+
+            user.username = username
+            user.password = password
+            user.save()
+            return user.json(), 202
+
+        return inner()
 
     def delete(self, user_id):
-        user: UserModel = UserModel.find_one(id=user_id)
-        if user is None:
-            return {'message': 'username not found'}, 404
-        response = user.json()
-        user.delete()
-        return {'message': 'user delete success', 'data': response}
+        @find_or_404(UserModel, id=user_id)
+        def inner(*args):
+            (user,) = args
+            user: UserModel
+            response = user.json()
+            user.delete()
+            return {'message': 'user delete success', 'data': response}
+
+        return inner()
 
 
 class AuthResource(Resource):
@@ -58,10 +72,14 @@ class AuthResource(Resource):
         payload = parser.parse_args()
         username = payload.get('username')
         password = payload.get('password')
-        user: UserModel = UserModel.find_one(username=username)
-        if user is None:
-            return {'message': 'username not found'}, 404
-        if user.password != password:
-            return {'message': 'password incorrect'}, 401
-        access_token = create_access_token(identity=username)
-        return {'access_token': access_token}
+
+        @find_or_404(UserModel, username=username)
+        def inner(*args):
+            (user,) = args
+            user: UserModel
+            if user.password != password:
+                return {'message': 'password incorrect'}, 401
+            access_token = create_access_token(identity=username)
+            return {'access_token': access_token}
+
+        return inner()
