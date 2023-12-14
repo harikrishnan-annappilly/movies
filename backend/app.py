@@ -1,8 +1,9 @@
 from flask import Flask, render_template
+from flask_jwt_extended import JWTManager
 from flask_restful import Api
 
 from db import db
-from resources.user import UsersResource
+from resources.user import UsersResource, UserResource, AuthResource
 
 app = Flask(__name__)
 
@@ -12,6 +13,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 api = Api(app)
+JWTManager(app)
 
 
 @app.before_request
@@ -25,6 +27,8 @@ def index():
 
 
 api.add_resource(UsersResource, '/users')
+api.add_resource(UserResource, '/user/<int:user_id>')
+api.add_resource(AuthResource, '/login')
 
 if __name__ == '__main__':
     app.run(debug=True)
