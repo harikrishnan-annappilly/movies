@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 
 from db import db
 
@@ -18,7 +18,7 @@ def create_tables():
 
 @app.route('/')
 def index():
-    return 'App running...'
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
