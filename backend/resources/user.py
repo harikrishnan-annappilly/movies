@@ -21,7 +21,7 @@ class UsersResource(Resource):
         def inner():
             user = UserModel(**payload)
             user.save()
-            return {'message': 'user created success', **user.json()}, 201
+            return user.json(), 201
 
         return inner()
 
@@ -42,15 +42,12 @@ class UserResource(Resource):
         password = payload.get('password')
 
         @find_or_404(UserModel, id=user_id)
+        @if_exist_400(UserModel, not_id=user_id, username=username)
         def inner(*args):
             (user,) = args
             user: UserModel
-            if user.username != username:
-                return {'message': 'username already taken'}, 400
 
-            user.username = username
-            user.password = password
-            user.save()
+            user.update(**payload)
             return user.json(), 202
 
         return inner()

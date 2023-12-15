@@ -1,7 +1,9 @@
 # Python ignores
 *.pyc
 *.db
+*.ipynb
 .env
+.ipynb_checkpoints
 
 # React ignores
 # Logs
