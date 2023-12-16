@@ -1,4 +1,6 @@
 import os
+from datetime import datetime
+import pytz
 from flask import Flask, render_template
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
@@ -13,6 +15,9 @@ from util.swagger import SWAGGER_URL, swaggerui_blueprint
 app = Flask(__name__)
 
 CUR_DIR = os.path.dirname(os.path.abspath(__file__))
+CUR_TIME = datetime.now(pytz.timezone('Asia/Kolkata'))
+BUILD_TIME = CUR_TIME.strftime("%d %b %Y, %I:%M:%S %p %Z")
+BUILD_USING = 'Python 🐍 Dev Server ⚙️'
 app.config['SECRET_KEY'] = 'key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(CUR_DIR, 'data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -30,7 +35,12 @@ def create_tables():
 
 @app.route('/')
 def index():
-    return render_template('index.html', swagger_url=SWAGGER_URL)
+    return render_template(
+        'index.html',
+        swagger_url=SWAGGER_URL,
+        build_time=BUILD_TIME,
+        build_using=BUILD_USING,
+    )
 
 
 api.add_resource(UsersResource, '/users')

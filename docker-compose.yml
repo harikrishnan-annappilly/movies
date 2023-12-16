@@ -4,6 +4,6 @@ services:
   backend:
     build:
       context: ./backend
-    image: movies-backend
+    image: harikrishnanas/movies-backend
     ports:
       - "5000:5000"
