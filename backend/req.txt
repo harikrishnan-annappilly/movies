@@ -1,5 +1,7 @@
 Flask
-Flask-RESTful
 Flask-JWT-Extended
-Flask-SQLAlchemy
 Flask-Migrate
+Flask-RESTful
+Flask-SQLAlchemy
+Flask-Cors
+flask-swagger-ui
