@@ -1,0 +1,6 @@
+# Python ignores
+*.pyc
+*.db
+*.ipynb
+.env
+.ipynb_checkpoints

@@ -39,4 +39,4 @@ api.add_resource(MoviesResource, '/movies')
 api.add_resource(MovieResource, '/movie/<int:id>')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
