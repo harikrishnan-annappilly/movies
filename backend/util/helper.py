@@ -1,6 +1,9 @@
 from models import BaseModel
 
 
+strip_str = lambda value: value.strip() if isinstance(value, str) else value
+
+
 def _check_item(Model: BaseModel, need_item: bool, **kwargs):
     """
     This method will check and let you know whether item present or not for the passed Args.

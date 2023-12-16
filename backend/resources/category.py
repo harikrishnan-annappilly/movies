@@ -1,10 +1,10 @@
 from typing import List
 from flask_restful import Resource, reqparse
 from models import CategoryModel
-from util.helper import if_exist_400, find_or_404
+from util.helper import if_exist_400, find_or_404, strip_str
 
 parser = reqparse.RequestParser()
-parser.add_argument('name', required=True)
+parser.add_argument('name', required=True, type=strip_str)
 
 
 class CategoriesResource(Resource):

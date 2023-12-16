@@ -2,11 +2,11 @@ from typing import List
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token
 from models import UserModel
-from util.helper import if_exist_400, find_or_404
+from util.helper import if_exist_400, find_or_404, strip_str
 
 parser = reqparse.RequestParser()
-parser.add_argument('username', required=True)
-parser.add_argument('password', required=True)
+parser.add_argument('username', required=True, type=strip_str)
+parser.add_argument('password', required=True, type=str)
 
 
 class UsersResource(Resource):

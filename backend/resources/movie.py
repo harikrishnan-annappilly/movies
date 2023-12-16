@@ -1,10 +1,10 @@
 from typing import List
 from flask_restful import Resource, reqparse
 from models import MovieModel, CategoryModel
-from util.helper import find_or_404, if_exist_400
+from util.helper import find_or_404, if_exist_400, strip_str
 
 parser = reqparse.RequestParser()
-parser.add_argument('name', required=True, type=str)
+parser.add_argument('name', required=True, type=strip_str)
 parser.add_argument('category_id', required=True, type=int)
 
 
