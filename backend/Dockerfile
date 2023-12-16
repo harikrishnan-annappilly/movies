@@ -12,5 +12,8 @@ RUN pip install -r requirements.txt
 COPY . .
 RUN python ./util/sample_data_gen.py
 
+# Switch to non-root user
+USER daemon
+
 # Start the app when docker is running
 ENTRYPOINT [ "python", "app.py" ]
