@@ -6,6 +6,7 @@ from flask_restful import Api
 from db import db
 from resources.user import UsersResource, UserResource, AuthResource
 from resources.category import CategoriesResource, CategoryResource
+from resources.movie import MoviesResource, MovieResource
 
 app = Flask(__name__)
 
@@ -34,6 +35,8 @@ api.add_resource(UserResource, '/user/<int:user_id>')
 api.add_resource(AuthResource, '/login')
 api.add_resource(CategoriesResource, '/categories')
 api.add_resource(CategoryResource, '/category/<int:id>')
+api.add_resource(MoviesResource, '/movies')
+api.add_resource(MovieResource, '/movie/<int:id>')
 
 if __name__ == '__main__':
     app.run(debug=True)
