@@ -10,6 +10,7 @@ RUN pip install -r requirements.txt
 
 # Copy app contents
 COPY . .
+RUN python ./util/sample_data_gen.py
 
 # Start the app when docker is running
 ENTRYPOINT [ "python", "app.py" ]
