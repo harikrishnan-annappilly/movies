@@ -5,6 +5,7 @@ CUR_DIR = os.path.dirname(os.path.abspath(__file__))
 APP_PATH = os.path.join(CUR_DIR, '..')
 sys.path.append(APP_PATH)
 from datetime import datetime
+from random import randint
 from db import db
 from models import UserModel, CategoryModel, MovieModel, BaseModel
 
@@ -21,13 +22,19 @@ categories = [
 ]
 
 movies = [
-    {'name': 'Avatar', 'category_id': 1},
-    {'name': 'Avengers', 'category_id': 1},
-    {'name': 'Nun', 'category_id': 2},
-    {'name': 'Nun 2', 'category_id': 2},
-    {'name': 'Moon', 'category_id': 3},
-    {'name': 'Interstellar', 'category_id': 3},
-    {'name': 'Minnal Murali', 'category_id': 3},
+    {'name': 'Avatar', 'category_id': randint(1, len(categories))},
+    {'name': 'Avengers', 'category_id': randint(1, len(categories))},
+    {'name': 'Nun', 'category_id': randint(1, len(categories))},
+    {'name': 'Nun 2', 'category_id': randint(1, len(categories))},
+    {'name': 'Moon', 'category_id': randint(1, len(categories))},
+    {'name': 'Interstellar', 'category_id': randint(1, len(categories))},
+    {'name': 'Minnal Murali', 'category_id': randint(1, len(categories))},
+    {'name': 'Life of Pie', 'category_id': randint(1, len(categories))},
+    {'name': 'Tomorrow Land', 'category_id': randint(1, len(categories))},
+    {'name': 'Palthu Janwar', 'category_id': randint(1, len(categories))},
+    {'name': 'Falimy', 'category_id': randint(1, len(categories))},
+    {'name': 'Pheonix', 'category_id': randint(1, len(categories))},
+    {'name': 'Salaar', 'category_id': randint(1, len(categories))},
 ]
 
 items = [
