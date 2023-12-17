@@ -7,3 +7,10 @@ services:
     image: harikrishnanas/movies-backend
     ports:
       - "5000:5000"
+
+  frontend:
+    build:
+      context: ./frontend
+    image: harikrishnanas/movies-frontend
+    ports:
+      - "80:80"
