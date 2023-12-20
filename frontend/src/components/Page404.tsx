@@ -1,7 +1,6 @@
-import { Outlet } from "react-router";
-import NavBar from "./components/NavBar";
+import NavBar from "./NavBar";
 
-function App() {
+function Page404() {
     return (
         <>
             <div className="row">
@@ -9,12 +8,13 @@ function App() {
                     <NavBar />
                 </div>
             </div>
-            <Outlet />
             <div className="row">
-                <div className="col bg-warning text-dark">Footer</div>
+                <div className="col-12">
+                    <h1>Error</h1>
+                </div>
             </div>
         </>
     );
 }
 
-export default App;
+export default Page404;
