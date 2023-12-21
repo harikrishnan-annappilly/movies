@@ -55,7 +55,7 @@ function MoviesTable() {
     };
 
     return (
-        <table className="table table-hover table-striped">
+        <table className="table table-hover table-striped m-0">
             <thead>
                 <tr>
                     <th>ID</th>

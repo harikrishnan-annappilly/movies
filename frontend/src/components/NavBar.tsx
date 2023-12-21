@@ -4,7 +4,7 @@ import reactLogo from "../assets/react.svg";
 function NavBar() {
     return (
         <nav
-            className="navbar navbar-expand-lg bg-body-tertiary bg-dark"
+            className="navbar navbar-expand-lg bg-body-tertiary bg-dark mb-3"
             data-bs-theme="dark"
         >
             <div className="container-fluid">

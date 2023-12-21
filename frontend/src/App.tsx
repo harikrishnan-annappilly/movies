@@ -5,7 +5,7 @@ function App() {
     return (
         <>
             <div className="row">
-                <div className="col-12">
+                <div className="col">
                     <NavBar />
                 </div>
             </div>
