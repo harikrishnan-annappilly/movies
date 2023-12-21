@@ -21,10 +21,20 @@ function MoviesTable() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const constoller = {
+            movies: new AbortController(),
+        };
+
         axios
-            .get("http://localhost:5000/movies")
+            .get("http://localhost:5000/movies", {
+                signal: constoller.movies.signal,
+            })
             .then(({ data: movies }) => setMoviesList(movies))
             .catch((err) => console.log(err));
+
+        return () => {
+            constoller.movies.abort();
+        };
     }, []);
 
     const handleLike = (movieId: number) => {
