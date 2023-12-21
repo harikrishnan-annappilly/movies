@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Like from "../utils/Like";
 
 interface CategoryData {
     id: number;
@@ -10,6 +11,7 @@ interface MoviesData {
     id: number;
     name: string;
     category: CategoryData;
+    liked: boolean;
 }
 
 function MoviesTable() {
@@ -21,6 +23,13 @@ function MoviesTable() {
             .then(({ data: movies }) => setMoviesList(movies))
             .catch((err) => console.log(err));
     }, []);
+
+    const handleLike = (movieId: number) => {
+        const newMovieList = moviesList.map((movie) =>
+            movie.id === movieId ? { ...movie, liked: !movie.liked } : movie
+        );
+        setMoviesList(newMovieList);
+    };
 
     return (
         <table className="table table-hover table-striped">
@@ -40,7 +49,12 @@ function MoviesTable() {
                         <td>{movie.id}</td>
                         <td>{movie.name}</td>
                         <td>{movie.category.name}</td>
-                        <td>Like</td>
+                        <td>
+                            <Like
+                                liked={movie.liked}
+                                onClick={() => handleLike(movie.id)}
+                            />
+                        </td>
                         <td>Edit</td>
                         <td>Delete</td>
                     </tr>

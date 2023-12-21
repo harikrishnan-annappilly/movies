@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./index.css";
 import Page404 from "./components/Page404.tsx";
-import MoviesApp from "./components/Movies/MoviesApp.tsx";
+import MoviesApp from "./components/movies/MoviesApp.tsx";
 
 const myRouter = createBrowserRouter([
     {
