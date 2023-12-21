@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Like from "../utils/Like";
+import TableButton from "../utils/TableButton";
+import { useNavigate } from "react-router-dom";
 
 interface CategoryData {
     id: number;
@@ -16,6 +18,7 @@ interface MoviesData {
 
 function MoviesTable() {
     const [moviesList, setMoviesList] = useState<MoviesData[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios
@@ -28,6 +31,16 @@ function MoviesTable() {
         const newMovieList = moviesList.map((movie) =>
             movie.id === movieId ? { ...movie, liked: !movie.liked } : movie
         );
+        setMoviesList(newMovieList);
+    };
+
+    const handleEdit = (movieId: number) => {
+        console.log("Edit clicked for movie", movieId);
+        navigate("/edit/" + movieId);
+    };
+
+    const handleDelete = (movieId: number) => {
+        const newMovieList = moviesList.filter((movie) => movie.id !== movieId);
         setMoviesList(newMovieList);
     };
 
@@ -55,8 +68,20 @@ function MoviesTable() {
                                 onClick={() => handleLike(movie.id)}
                             />
                         </td>
-                        <td>Edit</td>
-                        <td>Delete</td>
+                        <td>
+                            <TableButton
+                                type="edit"
+                                color="warning"
+                                onClick={() => handleEdit(movie.id)}
+                            />
+                        </td>
+                        <td>
+                            <TableButton
+                                color="danger"
+                                type="delete"
+                                onClick={() => handleDelete(movie.id)}
+                            />
+                        </td>
                     </tr>
                 ))}
             </tbody>
