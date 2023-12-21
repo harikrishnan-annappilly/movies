@@ -1,39 +1,26 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { CategoryData } from "./MoviesApp";
 
-interface CategoryData {
-    id: number;
-    name: string;
+interface Props {
+    categoryList: CategoryData[];
+    selectedCategory: CategoryData;
+    onClick: (cat: CategoryData) => void;
 }
 
-function CategoryList() {
-    const allCategory: CategoryData = { id: 0, name: "All Movies" };
-    const [categoryList, setCategoryList] = useState<CategoryData[]>([]);
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        axios
-            .get("http://localhost:5000/categories", {
-                signal: controller.signal,
-            })
-            .then(({ data: categories }) =>
-                setCategoryList([allCategory, ...categories])
-            )
-            .catch((err) => console.log(err));
-
-        return () => {
-            controller.abort();
-        };
-    }, []);
+function CategoryList(props: Props) {
+    const { categoryList, selectedCategory, onClick } = props;
 
     return (
         <ul className="list-group">
             {categoryList.map((category) => (
                 <li
                     key={category.id}
-                    className="list-group-item list-group-item-action clickable"
-                    onClick={() => console.log(category)}
+                    className={
+                        "list-group-item list-group-item-action clickable" +
+                        (selectedCategory.id === category.id
+                            ? " bg-warning"
+                            : "")
+                    }
+                    onClick={() => onClick(category)}
                 >
                     {category.name}
                 </li>
