@@ -14,3 +14,4 @@ services:
     image: harikrishnanas/movies-frontend
     ports:
       - "80:80"
+      - "443:443"
