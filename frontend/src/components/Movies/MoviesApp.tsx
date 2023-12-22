@@ -34,6 +34,16 @@ function MoviesApp() {
         setMoviesList(newMovieList);
     };
 
+    const getFilteredMovies = (movies: MoviesData[]) => {
+        if (selectedCategory.id < 1) return movies;
+        const newMovies = movies.filter(
+            (m) => m.category.id === selectedCategory.id
+        );
+        return newMovies;
+    };
+
+    const filterdMovies = getFilteredMovies(moviesList);
+
     return (
         <div className="row mb-3">
             <div className="d-none d-lg-block col-12 col-lg-3 bg-primary pe-0">
@@ -48,7 +58,7 @@ function MoviesApp() {
             <div className="col-12 col-lg-9 bg-success ps-0">
                 <div className="mx-2">
                     <MoviesTable
-                        movies={moviesList}
+                        movies={filterdMovies}
                         onLike={handleLike}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
