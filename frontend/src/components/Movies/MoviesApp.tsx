@@ -5,6 +5,8 @@ import MoviesTable from "./MoviesTable";
 import userMovie, { MoviesData } from "../../hooks/userMovie";
 import useCategory, { CategoryData } from "../../hooks/useCategory";
 import { useState } from "react";
+import Pagination from "../utils/Pagination";
+import { ceil } from "lodash";
 
 function MoviesApp() {
     const { categoryList, defaultCategory } = useCategory();
@@ -13,8 +15,14 @@ function MoviesApp() {
         useState<CategoryData>(defaultCategory);
     const navigate = useNavigate();
 
+    const [pageNav, setPageNav] = useState({
+        itemsPerPage: 4,
+        currentPage: 1,
+    });
+
     const handleCategoryChange = (category: CategoryData) => {
         setSelectedCategory(category);
+        resetPage();
     };
 
     const handleLike = (movieId: number) => {
@@ -34,6 +42,14 @@ function MoviesApp() {
         setMoviesList(newMovieList);
     };
 
+    const setPage = (page: number) => {
+        setPageNav({ ...pageNav, currentPage: page });
+    };
+
+    const resetPage = () => {
+        setPage(1);
+    };
+
     const getFilteredMovies = (movies: MoviesData[]) => {
         if (selectedCategory.id < 1) return movies;
         const newMovies = movies.filter(
@@ -42,7 +58,18 @@ function MoviesApp() {
         return newMovies;
     };
 
+    const getMoviesToRender = (movies: MoviesData[]) => {
+        const startIndex =
+            Math.max(pageNav.currentPage - 1, 0) * pageNav.itemsPerPage;
+        const endIndex = startIndex + pageNav.itemsPerPage;
+        return movies.slice(startIndex, endIndex);
+    };
+
     const filterdMovies = getFilteredMovies(moviesList);
+    const moviesToRender = getMoviesToRender(filterdMovies);
+
+    if (moviesToRender.length === 0 && moviesList.length !== 0)
+        setPage(pageNav.currentPage - 1);
 
     return (
         <div className="row mb-3">
@@ -56,12 +83,23 @@ function MoviesApp() {
                 </div>
             </div>
             <div className="col-12 col-lg-9 bg-success ps-0">
-                <div className="mx-2">
+                <div className="mx-2 mb-3">
                     <MoviesTable
-                        movies={filterdMovies}
+                        movies={moviesToRender}
                         onLike={handleLike}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                    />
+                </div>
+                <div className="mx-2 mb-3">
+                    <Pagination
+                        count={ceil(
+                            filterdMovies.length / pageNav.itemsPerPage
+                        )}
+                        select={pageNav.currentPage}
+                        onClick={(n) =>
+                            setPageNav({ ...pageNav, currentPage: n })
+                        }
                     />
                 </div>
             </div>
