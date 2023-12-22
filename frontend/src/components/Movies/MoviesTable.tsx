@@ -1,58 +1,16 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { MoviesData } from "../../hooks/userMovie";
 import Like from "../utils/Like";
 import TableButton from "../utils/TableButton";
-import { useNavigate } from "react-router-dom";
 
-interface CategoryData {
-    id: number;
-    name: string;
+interface Props {
+    movies: MoviesData[];
+    onLike: (movieID: number) => void;
+    onEdit: (movieID: number) => void;
+    onDelete: (movieID: number) => void;
 }
 
-interface MoviesData {
-    id: number;
-    name: string;
-    category: CategoryData;
-    liked: boolean;
-}
-
-function MoviesTable() {
-    const [moviesList, setMoviesList] = useState<MoviesData[]>([]);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const constoller = {
-            movies: new AbortController(),
-        };
-
-        axios
-            .get("http://localhost:5000/movies", {
-                signal: constoller.movies.signal,
-            })
-            .then(({ data: movies }) => setMoviesList(movies))
-            .catch((err) => console.log(err));
-
-        return () => {
-            constoller.movies.abort();
-        };
-    }, []);
-
-    const handleLike = (movieId: number) => {
-        const newMovieList = moviesList.map((movie) =>
-            movie.id === movieId ? { ...movie, liked: !movie.liked } : movie
-        );
-        setMoviesList(newMovieList);
-    };
-
-    const handleEdit = (movieId: number) => {
-        console.log("Edit clicked for movie", movieId);
-        navigate("/edit/" + movieId);
-    };
-
-    const handleDelete = (movieId: number) => {
-        const newMovieList = moviesList.filter((movie) => movie.id !== movieId);
-        setMoviesList(newMovieList);
-    };
+function MoviesTable(props: Props) {
+    const { movies, onLike, onEdit, onDelete } = props;
 
     return (
         <table className="table table-hover table-striped m-0">
@@ -67,7 +25,7 @@ function MoviesTable() {
                 </tr>
             </thead>
             <tbody>
-                {moviesList.map((movie) => (
+                {movies.map((movie) => (
                     <tr key={movie.id}>
                         <td>{movie.id}</td>
                         <td>{movie.name}</td>
@@ -75,21 +33,21 @@ function MoviesTable() {
                         <td>
                             <Like
                                 liked={movie.liked}
-                                onClick={() => handleLike(movie.id)}
+                                onClick={() => onLike(movie.id)}
                             />
                         </td>
                         <td>
                             <TableButton
                                 type="edit"
                                 color="warning"
-                                onClick={() => handleEdit(movie.id)}
+                                onClick={() => onEdit(movie.id)}
                             />
                         </td>
                         <td>
                             <TableButton
                                 color="danger"
                                 type="delete"
-                                onClick={() => handleDelete(movie.id)}
+                                onClick={() => onDelete(movie.id)}
                             />
                         </td>
                     </tr>

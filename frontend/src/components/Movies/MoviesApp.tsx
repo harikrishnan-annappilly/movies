@@ -1,37 +1,37 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import CategoryList from "./CategoryList";
 import MoviesTable from "./MoviesTable";
-
-export interface CategoryData {
-    id: number;
-    name: string;
-}
+import userMovie, { MoviesData } from "../../hooks/userMovie";
+import useCategory, { CategoryData } from "../../hooks/useCategory";
+import { useState } from "react";
 
 function MoviesApp() {
-    const defaultCategory: CategoryData = { id: 0, name: "All Movies" };
-    const [categoryList, setCategoryList] = useState<CategoryData[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState(defaultCategory);
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        axios
-            .get("http://localhost:5000/categories", {
-                signal: controller.signal,
-            })
-            .then(({ data: categories }) =>
-                setCategoryList([defaultCategory, ...categories])
-            )
-            .catch((err) => console.log(err));
-
-        return () => {
-            controller.abort();
-        };
-    }, []);
+    const { categoryList, defaultCategory } = useCategory();
+    const { moviesList, setMoviesList } = userMovie();
+    const [selectedCategory, setSelectedCategory] =
+        useState<CategoryData>(defaultCategory);
+    const navigate = useNavigate();
 
     const handleCategoryChange = (category: CategoryData) => {
         setSelectedCategory(category);
+    };
+
+    const handleLike = (movieId: number) => {
+        const newMovieList = moviesList.map((movie) =>
+            movie.id === movieId ? { ...movie, liked: !movie.liked } : movie
+        );
+        setMoviesList(newMovieList);
+    };
+
+    const handleEdit = (movieId: number) => {
+        console.log("Edit clicked for movie", movieId);
+        navigate("/edit/" + movieId);
+    };
+
+    const handleDelete = (movieId: number) => {
+        const newMovieList = moviesList.filter((movie) => movie.id !== movieId);
+        setMoviesList(newMovieList);
     };
 
     return (
@@ -47,7 +47,12 @@ function MoviesApp() {
             </div>
             <div className="col-12 col-lg-9 bg-success ps-0">
                 <div className="mx-2">
-                    <MoviesTable />
+                    <MoviesTable
+                        movies={moviesList}
+                        onLike={handleLike}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                    />
                 </div>
             </div>
         </div>
