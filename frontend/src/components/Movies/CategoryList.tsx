@@ -1,4 +1,4 @@
-import { CategoryData } from "./MoviesApp";
+import { CategoryData } from "../../hooks/useCategory";
 
 interface Props {
     categoryList: CategoryData[];
@@ -16,9 +16,7 @@ function CategoryList(props: Props) {
                     key={category.id}
                     className={
                         "list-group-item list-group-item-action clickable" +
-                        (selectedCategory.id === category.id
-                            ? " bg-warning"
-                            : "")
+                        (selectedCategory.id === category.id ? " active" : "")
                     }
                     onClick={() => onClick(category)}
                 >

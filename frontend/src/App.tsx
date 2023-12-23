@@ -11,7 +11,7 @@ function App() {
             </div>
             <Outlet />
             <div className="row">
-                <div className="col bg-warning text-dark">Footer</div>
+                <div className="col text-white">Footer</div>
             </div>
         </>
     );

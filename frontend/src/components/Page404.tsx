@@ -9,8 +9,8 @@ function Page404() {
                 </div>
             </div>
             <div className="row">
-                <div className="col-12">
-                    <h1>Error</h1>
+                <div className="col-12 text-danger">
+                    <h1>Error - 404</h1>
                 </div>
             </div>
         </>
