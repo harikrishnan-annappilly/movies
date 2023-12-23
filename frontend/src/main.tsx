@@ -7,6 +7,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./index.css";
 import Page404 from "./components/Page404.tsx";
 import MoviesApp from "./components/movies/MoviesApp.tsx";
+import MovieForm from "./components/movies/MovieForm.tsx";
 
 const myRouter = createBrowserRouter([
     {
@@ -16,6 +17,7 @@ const myRouter = createBrowserRouter([
         children: [
             { index: true, element: <MoviesApp /> },
             { path: "/movies", element: <MoviesApp /> },
+            { path: "/movie/:movieID", element: <MovieForm /> },
         ],
     },
 ]);
