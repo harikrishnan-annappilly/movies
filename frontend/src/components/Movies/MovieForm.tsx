@@ -17,7 +17,11 @@ function MovieForm() {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<MovieFormData>({ resolver: zodResolver(schema) });
+    } = useForm<MovieFormData>({
+        resolver: zodResolver(schema),
+        criteriaMode: "all",
+        mode: "onChange",
+    });
 
     const handleOnSubmit = (formData: MovieFormData) => console.log(formData);
 
@@ -48,10 +52,17 @@ function MovieForm() {
                             {...register("name")}
                             className={
                                 "form-control " +
-                                (errors.name && "border-danger")
+                                (errors["name"] && "border-danger")
                             }
                         />
-                        <p className="text-danger">{errors.name?.message}</p>
+                        {errors["name"]?.types &&
+                            Object.values(errors["name"].types).map(
+                                (errorMessage) => (
+                                    <p className="text-danger mb-1">
+                                        {errorMessage}
+                                    </p>
+                                )
+                            )}
                     </div>
                     <div className="mb-3">
                         <label className="form-label">Movie Price:</label>
@@ -60,10 +71,17 @@ function MovieForm() {
                             {...register("price", { valueAsNumber: true })}
                             className={
                                 "form-control " +
-                                (errors.price && "border-danger")
+                                (errors["price"] && "border-danger")
                             }
                         />
-                        <p className="text-danger">{errors.price?.message}</p>
+                        {errors["price"]?.types &&
+                            Object.values(errors["price"].types).map(
+                                (errorMessage) => (
+                                    <p className="text-danger mb-1">
+                                        {errorMessage}
+                                    </p>
+                                )
+                            )}
                     </div>
                     <div className="mb-3">
                         <label className="form-label">Category:</label>
@@ -71,16 +89,21 @@ function MovieForm() {
                             {...register("categoryID", { valueAsNumber: true })}
                             className={
                                 "form-select " +
-                                (errors.categoryID && "border-danger")
+                                (errors["categoryID"] && "border-danger")
                             }
                         >
                             <option value="">--Select--</option>
                             <option value="1">Category 1</option>
                             <option value="2">Category 2</option>
                         </select>
-                        <p className="text-danger">
-                            {errors.categoryID?.message}
-                        </p>
+                        {errors["categoryID"]?.types &&
+                            Object.values(errors["categoryID"].types).map(
+                                (errorMessage) => (
+                                    <p className="text-danger mb-1">
+                                        {errorMessage}
+                                    </p>
+                                )
+                            )}
                     </div>
                     <div className="mb-3">
                         <button
