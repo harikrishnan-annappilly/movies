@@ -7,6 +7,8 @@ import useCategory, { CategoryData } from "../../hooks/useCategory";
 import { useState } from "react";
 import Pagination from "../utils/Pagination";
 import { ceil } from "lodash";
+import { deleteMovie } from "../../services/movie-service";
+import { AxiosError } from "axios";
 
 function MoviesApp() {
     const { categoryList, defaultCategory } = useCategory();
@@ -38,8 +40,19 @@ function MoviesApp() {
     };
 
     const handleDelete = (movieId: number) => {
+        const originalMovieList = [...moviesList];
         const newMovieList = moviesList.filter((movie) => movie.id !== movieId);
         setMoviesList(newMovieList);
+        deleteMovie(movieId)
+            .then((data) => console.log(data))
+            .catch((err) => {
+                if (err instanceof AxiosError && err.response?.status === 404) {
+                    console.log("movie id is invalid");
+                    setMoviesList(originalMovieList);
+                    return;
+                }
+                console.log(err);
+            });
     };
 
     const setPage = (page: number) => {

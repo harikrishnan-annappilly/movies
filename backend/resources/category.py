@@ -1,7 +1,7 @@
 from typing import List
 from flask_restful import Resource, reqparse
 from models import CategoryModel
-from util.helper import if_exist_400, find_or_404, strip_str
+from util.helper import strip_str
 
 parser = reqparse.RequestParser()
 parser.add_argument('name', required=True, type=strip_str)
@@ -15,7 +15,7 @@ class CategoriesResource(Resource):
     def post(self):
         payload = parser.parse_args()
 
-        @if_exist_400(CategoryModel, name=payload.get('name'))
+        @CategoryModel.if_exist_400(name=payload.get('name'))
         def inner():
             category = CategoryModel(**payload)
             category.save()
@@ -26,7 +26,7 @@ class CategoriesResource(Resource):
 
 class CategoryResource(Resource):
     def get(self, id):
-        @find_or_404(CategoryModel, id=id)
+        @CategoryModel.find_or_404(id=id)
         def inner(*args):
             (category,) = args
             category: CategoryModel
@@ -37,8 +37,8 @@ class CategoryResource(Resource):
     def put(self, id):
         payload = parser.parse_args()
 
-        @if_exist_400(CategoryModel, not_id=id, name=payload.get('name'))
-        @find_or_404(CategoryModel, id=id)
+        @CategoryModel.if_exist_400(not_id=id, name=payload.get('name'))
+        @CategoryModel.find_or_404(id=id)
         def inner(*args):
             (category,) = args
             category: CategoryModel
@@ -48,7 +48,7 @@ class CategoryResource(Resource):
         return inner()
 
     def delete(self, id):
-        @find_or_404(CategoryModel, id=id)
+        @CategoryModel.find_or_404(id=id)
         def inner(*args):
             (category,) = args
 

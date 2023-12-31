@@ -1,29 +1,78 @@
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-const schema = z.object({
-    name: z.string().min(3),
-    price: z.number({ invalid_type_error: "Invalid number" }).min(1),
-    categoryID: z.number({ invalid_type_error: "Invalid selection" }).min(1),
-});
-
-type MovieFormData = z.infer<typeof schema>;
+import { useEffect, useState } from "react";
+import axios, { AxiosError } from "axios";
+import { MoviesData } from "../../hooks/userMovie";
+import useCategory from "../../hooks/useCategory";
+import {
+    saveMovie,
+    movieSchema,
+    MovieFormData,
+} from "../../services/movie-service";
 
 function MovieForm() {
     const { movieID } = useParams();
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors },
     } = useForm<MovieFormData>({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(movieSchema),
         criteriaMode: "all",
         mode: "onChange",
     });
+    const [populateError, setPopulateError] = useState<React.ReactNode>();
+    const { categoryList } = useCategory();
+    const host = `${window.location.protocol}//${window.location.hostname}:5000`;
+    const get_url = host + `/movie/${movieID}`;
 
-    const handleOnSubmit = (formData: MovieFormData) => console.log(formData);
+    useEffect(() => {
+        if (movieID === "new") return;
+
+        axios
+            .get(get_url)
+            .then(({ data }: { data: MoviesData }) => {
+                const formData = {
+                    movieID: movieID,
+                    name: data.name,
+                    categoryID: data.category.id,
+                };
+                reset(formData);
+            })
+            .catch((err) => {
+                if (err instanceof AxiosError) {
+                    if (err.response?.status === 404) {
+                        setPopulateError(
+                            <>
+                                Movie with ID:<strong>{movieID}</strong> is not
+                                present in DB
+                            </>
+                        );
+                    }
+                }
+            });
+    }, []);
+
+    const handleOnSubmit = (formData: MovieFormData) => {
+        saveMovie(formData)
+            .then((res) => {
+                console.log(res);
+                setPopulateError("");
+            })
+            .catch((err) => {
+                if (err.response.status === 400)
+                    setPopulateError(
+                        <>
+                            Movie name:<strong>{formData.name}</strong> already
+                            taken
+                        </>
+                    );
+                else console.log("unexpected error");
+            });
+        console.log(formData);
+    };
 
     return (
         <div className="row mb-3">
@@ -42,8 +91,46 @@ function MovieForm() {
                                     : ""
                             }
                         >
-                            {movieID} - Movie Form
+                            Movie Form
                         </h4>
+                    </div>
+                    {populateError && (
+                        <div className="mb-3">
+                            <div
+                                className="alert alert-danger alert-dismissible fade show"
+                                role="alert"
+                            >
+                                {populateError}
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-bs-dismiss="alert"
+                                    aria-label="Close"
+                                ></button>
+                            </div>
+                        </div>
+                    )}
+                    <div className="mb-3">
+                        <label className="form-label">Movie ID:</label>
+                        <input
+                            type="text"
+                            {...register("movieID")}
+                            className={
+                                "form-control " +
+                                (errors["movieID"] && "border-danger")
+                            }
+                        />
+                        {errors["movieID"]?.types &&
+                            Object.values(errors["movieID"].types).map(
+                                (errorMessage) => (
+                                    <p
+                                        key={errorMessage?.toString()}
+                                        className="text-danger mb-1"
+                                    >
+                                        {errorMessage}
+                                    </p>
+                                )
+                            )}
                     </div>
                     <div className="mb-3">
                         <label className="form-label">Movie Name:</label>
@@ -58,7 +145,10 @@ function MovieForm() {
                         {errors["name"]?.types &&
                             Object.values(errors["name"].types).map(
                                 (errorMessage) => (
-                                    <p className="text-danger mb-1">
+                                    <p
+                                        key={errorMessage?.toString()}
+                                        className="text-danger mb-1"
+                                    >
                                         {errorMessage}
                                     </p>
                                 )
@@ -77,7 +167,10 @@ function MovieForm() {
                         {errors["price"]?.types &&
                             Object.values(errors["price"].types).map(
                                 (errorMessage) => (
-                                    <p className="text-danger mb-1">
+                                    <p
+                                        key={errorMessage?.toString()}
+                                        className="text-danger mb-1"
+                                    >
                                         {errorMessage}
                                     </p>
                                 )
@@ -92,14 +185,19 @@ function MovieForm() {
                                 (errors["categoryID"] && "border-danger")
                             }
                         >
-                            <option value="">--Select--</option>
-                            <option value="1">Category 1</option>
-                            <option value="2">Category 2</option>
+                            {categoryList.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
                         </select>
                         {errors["categoryID"]?.types &&
                             Object.values(errors["categoryID"].types).map(
                                 (errorMessage) => (
-                                    <p className="text-danger mb-1">
+                                    <p
+                                        key={errorMessage?.toString()}
+                                        className="text-danger mb-1"
+                                    >
                                         {errorMessage}
                                     </p>
                                 )

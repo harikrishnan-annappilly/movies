@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import axios, { CanceledError } from "axios";
+import { CanceledError } from "axios";
+import http from "../services/api-service";
 
 export default function <T>(endpoint: string) {
     const [genricList, setGenricList] = useState<T[]>([]);
@@ -7,10 +8,9 @@ export default function <T>(endpoint: string) {
     useEffect(() => {
         const constoller = new AbortController();
 
-        axios
-            .get("http://localhost:5000/" + endpoint, {
-                signal: constoller.signal,
-            })
+        http.get(endpoint, {
+            signal: constoller.signal,
+        })
             .then(({ data }) => setGenricList(data))
             .catch((err) =>
                 err instanceof CanceledError ? null : console.log(err)

@@ -33,3 +33,29 @@ class BaseModel(db.Model):
     @classmethod
     def find_all(cls, **kwargs):
         return cls._find(**kwargs).all()
+
+    @classmethod
+    def find_or_404(cls, **kwargs):
+        def wrap(func):
+            def inner(*f_args, **f_kwargs):
+                model = cls.find_one(**kwargs)
+                if model is None:
+                    return {'message': 'not found, what we do now..!', 'model': cls.__name__}, 404
+                return func(*f_args, model, **f_kwargs)
+
+            return inner
+
+        return wrap
+
+    @classmethod
+    def if_exist_400(cls, **kwargs):
+        def wrap(func):
+            def inner(*f_args, **f_kwargs):
+                model = cls.find_one(**kwargs)
+                if model:
+                    return {'message': 'item already exist with given details', 'model': cls.__name__}, 400
+                return func(*f_args, **f_kwargs)
+
+            return inner
+
+        return wrap

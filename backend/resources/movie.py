@@ -1,7 +1,7 @@
 from typing import List
 from flask_restful import Resource, reqparse
 from models import MovieModel, CategoryModel
-from util.helper import find_or_404, if_exist_400, strip_str
+from util.helper import strip_str
 
 parser = reqparse.RequestParser()
 parser.add_argument('name', required=True, type=strip_str)
@@ -16,19 +16,19 @@ class MoviesResource(Resource):
     def post(self):
         payload = parser.parse_args()
 
-        @find_or_404(CategoryModel, id=payload.get('category_id'))
-        @if_exist_400(MovieModel, name=payload.get('name'))
+        @CategoryModel.find_or_404(id=payload.get('category_id'))
+        @MovieModel.if_exist_400(name=payload.get('name'))
         def inner(*args):
             movie = MovieModel(**payload)
             movie.save()
-            return movie.json()
+            return movie.json(), 201
 
         return inner()
 
 
 class MovieResource(Resource):
     def get(self, id):
-        @find_or_404(MovieModel, id=id)
+        @MovieModel.find_or_404(id=id)
         def inner(*args):
             (movie,) = args
             movie: MovieModel
@@ -39,9 +39,9 @@ class MovieResource(Resource):
     def put(self, id):
         payload = parser.parse_args()
 
-        @find_or_404(MovieModel, id=id)
-        @find_or_404(CategoryModel, id=payload.get('category_id'))
-        @if_exist_400(MovieModel, not_id=id, name=payload.get('name'))
+        @MovieModel.find_or_404(id=id)
+        @CategoryModel.find_or_404(id=payload.get('category_id'))
+        @MovieModel.if_exist_400(not_id=id, name=payload.get('name'))
         def inner(*args):
             movie, _ = args
             movie: MovieModel
@@ -51,7 +51,7 @@ class MovieResource(Resource):
         return inner()
 
     def delete(self, id):
-        @find_or_404(MovieModel, id=id)
+        @MovieModel.find_or_404(id=id)
         def inner(*args):
             (movie,) = args
             movie: MovieModel

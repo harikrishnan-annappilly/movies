@@ -2,7 +2,7 @@ from typing import List
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token
 from models import UserModel
-from util.helper import if_exist_400, find_or_404, strip_str
+from util.helper import strip_str
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', required=True, type=strip_str)
@@ -17,7 +17,7 @@ class UsersResource(Resource):
     def post(self):
         payload = parser.parse_args()
 
-        @if_exist_400(UserModel, username=payload.get('username'))
+        @UserModel.if_exist_400(username=payload.get('username'))
         def inner():
             user = UserModel(**payload)
             user.save()
@@ -28,7 +28,7 @@ class UsersResource(Resource):
 
 class UserResource(Resource):
     def get(self, user_id):
-        @find_or_404(UserModel, id=user_id)
+        @UserModel.find_or_404(id=user_id)
         def inner(*args):
             (user,) = args
             user: UserModel
@@ -41,8 +41,8 @@ class UserResource(Resource):
         username = payload.get('username')
         password = payload.get('password')
 
-        @find_or_404(UserModel, id=user_id)
-        @if_exist_400(UserModel, not_id=user_id, username=username)
+        @UserModel.find_or_404(id=user_id)
+        @UserModel.if_exist_400(not_id=user_id, username=username)
         def inner(*args):
             (user,) = args
             user: UserModel
@@ -53,7 +53,7 @@ class UserResource(Resource):
         return inner()
 
     def delete(self, user_id):
-        @find_or_404(UserModel, id=user_id)
+        @UserModel.find_or_404(id=user_id)
         def inner(*args):
             (user,) = args
             user: UserModel
@@ -70,7 +70,7 @@ class AuthResource(Resource):
         username = payload.get('username')
         password = payload.get('password')
 
-        @find_or_404(UserModel, username=username)
+        @UserModel.find_or_404(username=username)
         def inner(*args):
             (user,) = args
             user: UserModel
