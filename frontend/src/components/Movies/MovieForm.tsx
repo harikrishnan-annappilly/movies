@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import {
 
 function MovieForm() {
     const { movieID } = useParams();
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -29,7 +30,7 @@ function MovieForm() {
     const get_url = host + `/movie/${movieID}`;
 
     useEffect(() => {
-        if (movieID === "new") return;
+        if (movieID === "new" || movieID === undefined) return;
 
         axios
             .get(get_url)
@@ -56,10 +57,11 @@ function MovieForm() {
     }, []);
 
     const handleOnSubmit = (formData: MovieFormData) => {
-        saveMovie(formData)
+        saveMovie({ movieID, ...formData })
             .then((res) => {
                 console.log(res);
                 setPopulateError("");
+                navigate("/");
             })
             .catch((err) => {
                 if (err.response.status === 400)
@@ -110,28 +112,6 @@ function MovieForm() {
                             </div>
                         </div>
                     )}
-                    <div className="mb-3">
-                        <label className="form-label">Movie ID:</label>
-                        <input
-                            type="text"
-                            {...register("movieID")}
-                            className={
-                                "form-control " +
-                                (errors["movieID"] && "border-danger")
-                            }
-                        />
-                        {errors["movieID"]?.types &&
-                            Object.values(errors["movieID"].types).map(
-                                (errorMessage) => (
-                                    <p
-                                        key={errorMessage?.toString()}
-                                        className="text-danger mb-1"
-                                    >
-                                        {errorMessage}
-                                    </p>
-                                )
-                            )}
-                    </div>
                     <div className="mb-3">
                         <label className="form-label">Movie Name:</label>
                         <input

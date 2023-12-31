@@ -9,6 +9,7 @@ import Pagination from "../utils/Pagination";
 import { ceil } from "lodash";
 import { deleteMovie } from "../../services/movie-service";
 import { AxiosError } from "axios";
+import AddMovie from "./AddMovie";
 
 function MoviesApp() {
     const { categoryList, defaultCategory } = useCategory();
@@ -98,7 +99,12 @@ function MoviesApp() {
             </div>
             <div className="col-12 col-lg-10 ps-0">
                 <div className="mx-2 mb-3">
-                    <div className="h4 mb-3">Movies</div>
+                    <div className="h4 mb-3 d-flex justify-content-between">
+                        <div>Movies</div>
+                        <div>
+                            <AddMovie />
+                        </div>
+                    </div>
                     <MoviesTable
                         movies={moviesToRender}
                         onLike={handleLike}
