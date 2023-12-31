@@ -6,10 +6,11 @@ import userMovie, { MoviesData } from "../../hooks/userMovie";
 import useCategory, { CategoryData } from "../../hooks/useCategory";
 import { useState } from "react";
 import Pagination from "../utils/Pagination";
-import { ceil } from "lodash";
+import _, { ceil } from "lodash";
 import { deleteMovie } from "../../services/movie-service";
 import { AxiosError } from "axios";
 import AddMovie from "./AddMovie";
+import MovieSearch from "./MovieSearch";
 
 function MoviesApp() {
     const { categoryList, defaultCategory } = useCategory();
@@ -23,8 +24,11 @@ function MoviesApp() {
         currentPage: 1,
     });
 
+    const [searchQuery, setSearchQuery] = useState("");
+
     const handleCategoryChange = (category: CategoryData) => {
         setSelectedCategory(category);
+        setSearchQuery("");
         resetPage();
     };
 
@@ -65,10 +69,12 @@ function MoviesApp() {
     };
 
     const getFilteredMovies = (movies: MoviesData[]) => {
-        if (selectedCategory.id < 1) return movies;
-        const newMovies = movies.filter(
-            (m) => m.category.id === selectedCategory.id
-        );
+        let newMovies = movies.filter((m) => m.name.startsWith(searchQuery));
+        if (selectedCategory.id > 0) {
+            newMovies = newMovies.filter(
+                (m) => m.category.id === selectedCategory.id
+            );
+        }
         return newMovies;
     };
 
@@ -82,7 +88,7 @@ function MoviesApp() {
     const filterdMovies = getFilteredMovies(moviesList);
     const moviesToRender = getMoviesToRender(filterdMovies);
 
-    if (moviesToRender.length === 0 && moviesList.length !== 0)
+    if (moviesToRender.length === 0 && filterdMovies.length !== 0)
         setPage(pageNav.currentPage - 1);
 
     return (
@@ -101,6 +107,12 @@ function MoviesApp() {
                 <div className="mx-2 mb-3">
                     <div className="h4 mb-3 d-flex justify-content-between">
                         <div>Movies</div>
+                        <div>
+                            <MovieSearch
+                                value={searchQuery}
+                                onSearch={(value) => setSearchQuery(value)}
+                            />
+                        </div>
                         <div>
                             <AddMovie />
                         </div>
